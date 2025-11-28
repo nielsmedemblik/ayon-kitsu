@@ -129,6 +129,14 @@ class SyncSettings(BaseSettingsModel):
     """Enabling 'Delete projects' will remove projects on Ayon when they get deleted on Kitsu"""
 
     delete_projects: bool = SettingsField(title="Delete projects")
+    normalize_case: bool = SettingsField(
+        True,
+        title="Normalize entity names to lowercase",
+        description=(
+            "If enabled, AYON forces lowercase slugs for all synced folders/tasks "
+            "and blocks case-insensitive duplicates before syncing to Kitsu."
+        ),
+    )
     sync_users: SyncUsers = SettingsField(
         default_factory=SyncUsers,
         title="Sync users",
@@ -146,6 +154,7 @@ class SyncSettings(BaseSettingsModel):
 
 SYNC_DEFAULT_VALUES = {
     "delete_projects": False,
+    "normalize_case": True,
     "sync_users": {
         "enabled": False,
         "default_password": "default_password",
