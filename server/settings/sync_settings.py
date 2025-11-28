@@ -88,6 +88,43 @@ class DefaultSyncInfo(BaseSettingsModel):
     )
 
 
+def _kitsu_entity_enum():
+    return [
+        {"value": "Asset", "label": "Asset"},
+        {"value": "Shot", "label": "Shot"},
+        {"value": "Sequence", "label": "Sequence"},
+        {"value": "Episode", "label": "Episode"},
+        {"value": "Edit", "label": "Edit"},
+        {"value": "Concept", "label": "Concept"},
+    ]
+
+
+class FamilyMappingCondition(BaseSettingsModel):
+    _layout: str = "compact"
+    ayon_family: str = SettingsField(
+        "",
+        title="AYON family",
+        regex=NAME_REGEX,
+    )
+    kitsu_entity_type: str = SettingsField(
+        "Asset",
+        enum_resolver=_kitsu_entity_enum,
+        title="Kitsu entity type",
+    )
+    kitsu_product_type: str = SettingsField(
+        "",
+        title="Kitsu product / asset type",
+        description="Optional subtype, for example the Asset product type",
+    )
+
+
+class FamilyMappingSettings(BaseSettingsModel):
+    mappings: list[FamilyMappingCondition] = SettingsField(
+        default_factory=list,
+        title="Folder & family mappings",
+    )
+
+
 class SyncSettings(BaseSettingsModel):
     """Enabling 'Delete projects' will remove projects on Ayon when they get deleted on Kitsu"""
 
@@ -99,6 +136,11 @@ class SyncSettings(BaseSettingsModel):
     default_sync_info: DefaultSyncInfo = SettingsField(
         default_factory=DefaultSyncInfo,
         title="Default sync info",
+    )
+    family_mapping: FamilyMappingSettings = SettingsField(
+        default_factory=FamilyMappingSettings,
+        title="Family mapping",
+        description="Controls how AYON families or folder types map to Kitsu entities",
     )
 
 
@@ -219,5 +261,19 @@ SYNC_DEFAULT_VALUES = {
                 "icon": "block",
             },
         ],
+    },
+    "family_mapping": {
+        "mappings": [
+            {
+                "ayon_family": "asset",
+                "kitsu_entity_type": "Asset",
+                "kitsu_product_type": "",
+            },
+            {
+                "ayon_family": "shot",
+                "kitsu_entity_type": "Shot",
+                "kitsu_product_type": "",
+            },
+        ]
     },
 }
